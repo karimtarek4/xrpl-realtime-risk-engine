@@ -1,0 +1,16 @@
+{
+  "servers": {
+    "datamate": {
+      "type": "stdio",
+      "command": "/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (Plugin).app/Contents/MacOS/Code Helper (Plugin)",
+      "args": [
+        "/Users/tro/.vscode/extensions/altimateai.vscode-altimate-mcp-server-0.8.8-darwin-arm64/dist/datamate-cli.js",
+        "start-stdio"
+      ],
+      "env": {
+        "ELECTRON_RUN_AS_NODE": "1"
+      },
+      "updatedAt": "2026-10-28T16:41:21.180Z"
+    }
+  }
+}
