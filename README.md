@@ -18,3 +18,20 @@ Real-time risk decisioning on live XRP Ledger payments. Every payment is validat
 ## Tech stack
 
 Python · Kafka · Schema Registry · PySpark Structured Streaming · Redis · PostgreSQL · Airflow · S3 / MinIO · FastAPI · Prometheus · Grafana · Docker
+
+## Repository structure
+
+| Folder | Purpose |
+|---|---|
+| `docs/` | Requirements, architecture, operations docs and ADRs (`docs/decisions/`) |
+| `schemas/` | Event schemas registered in Schema Registry |
+| `producers/` | XRPL WebSocket producer → `xrpl.raw` |
+| `streaming/` | PySpark validator and Structured Streaming feature jobs |
+| `risk_engine/` | Decision service and versioned rules |
+| `api/` | FastAPI service |
+| `storage/` | PostgreSQL, Redis and S3 / MinIO setup |
+| `tests/` | Unit and integration tests |
+| `monitoring/` | Prometheus and Grafana config |
+| `docker/` | Dockerfiles and compose files |
+| `scripts/` | Helper scripts |
+| `.github/workflows/` | CI/CD pipelines |
