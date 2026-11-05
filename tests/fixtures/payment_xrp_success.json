@@ -1,0 +1,69 @@
+{
+  "tx_json": {
+    "Account": "rh37VYCg1TT8WiMs9xErd5Dg3H7C1L8jrC",
+    "DeliverMax": "1583050000",
+    "Destination": "rDkY4dCocVftin734fnmR44CQXcyf9jofp",
+    "DestinationTag": 2419130456,
+    "Fee": "10000",
+    "Sequence": 96496187,
+    "SigningPubKey": "03E4BE5E175F290BF840693274383750EC534BBF3516F68D922DDB99BC520C6715",
+    "TransactionType": "Payment",
+    "TxnSignature": "3045022100AF4C86D287051BDAF623FD849C8C9D33D4B306DBEBA172D44881E19CC9A0B3520220136F6CB0C443F32DC0E78541232B90E7B68B62160100EA4EA030438504509AB3",
+    "date": 847180111
+  },
+  "meta": {
+    "AffectedNodes": [
+      {
+        "ModifiedNode": {
+          "FinalFields": {
+            "Account": "rDkY4dCocVftin734fnmR44CQXcyf9jofp",
+            "Balance": "4588914698",
+            "Flags": 0,
+            "OwnerCount": 0,
+            "Sequence": 106846288
+          },
+          "LedgerEntryType": "AccountRoot",
+          "LedgerIndex": "434D8C1E693396458608F0D1D7B0C2825088EDFF38B57E56FA080C68C91C2A1C",
+          "PreviousFields": {
+            "Balance": "3005864698"
+          },
+          "PreviousTxnID": "D19163240803C70D22A2FC63AAA1568CEE314EA00033733CA2529CB05725CF61",
+          "PreviousTxnLgrSeq": 108113966
+        }
+      },
+      {
+        "ModifiedNode": {
+          "FinalFields": {
+            "Account": "rh37VYCg1TT8WiMs9xErd5Dg3H7C1L8jrC",
+            "Balance": "2114127266243",
+            "Flags": 0,
+            "OwnerCount": 2,
+            "Sequence": 96496188
+          },
+          "LedgerEntryType": "AccountRoot",
+          "LedgerIndex": "9AB545F2F147C9CDE0C0EE23AE214BAAAC3C07053D5A538B26DA7D09A0F9D7B6",
+          "PreviousFields": {
+            "Balance": "2115710326243",
+            "Sequence": 96496187
+          },
+          "PreviousTxnID": "A6E464907CBD6C764142BD24F69064A8AE72593406EB391CBCC2B02DD4D33FFE",
+          "PreviousTxnLgrSeq": 108127239
+        }
+      }
+    ],
+    "TransactionIndex": 35,
+    "TransactionResult": "tesSUCCESS",
+    "delivered_amount": "1583050000"
+  },
+  "ctid": "C671E43D00230000",
+  "type": "transaction",
+  "validated": true,
+  "status": "closed",
+  "close_time_iso": "2026-11-05T07:48:31Z",
+  "ledger_index": 108127293,
+  "ledger_hash": "058DAD3EAB6F7E5B9223F5DBB480569982725993BCF73544FB663C2290E98A24",
+  "hash": "EE2FDE31CE70D9DE8102EC16E7C9A1F5F0CF9F0EC3797F189E01C2A114181B87",
+  "engine_result_code": 0,
+  "engine_result": "tesSUCCESS",
+  "engine_result_message": "The transaction was applied. Only final in a validated ledger."
+}

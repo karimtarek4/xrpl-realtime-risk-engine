@@ -1,0 +1,112 @@
+{
+  "tx_json": {
+    "Account": "rGk99J8mmxA2bmgmLNg1vXrCF5VqbRzqd1",
+    "DeliverMax": {
+      "currency": "4249547800000000000000000000000000000000",
+      "issuer": "rBitcoiNXev8VoVxV7pwoQx1sSfonVP9i3",
+      "value": "1000000000000000e15"
+    },
+    "Destination": "rGk99J8mmxA2bmgmLNg1vXrCF5VqbRzqd1",
+    "Fee": "0",
+    "Flags": 1073938432,
+    "Paths": [
+      [
+        {
+          "currency": "4555524F50000000000000000000000000000000",
+          "issuer": "rMkEuRii9w9uBMQDnWV5AA43gvYZR9JxVK",
+          "type": 48
+        }
+      ]
+    ],
+    "SendMax": "23580",
+    "Sequence": 0,
+    "SigningPubKey": "",
+    "TicketSequence": 107971589,
+    "TransactionType": "Payment",
+    "date": 847180111
+  },
+  "meta": {
+    "AffectedNodes": [
+      {
+        "ModifiedNode": {
+          "FinalFields": {
+            "Account": "rGk99J8mmxA2bmgmLNg1vXrCF5VqbRzqd1",
+            "Balance": "87433242",
+            "Flags": 0,
+            "OwnerCount": 260,
+            "Sequence": 107971608,
+            "TicketCount": 16
+          },
+          "LedgerEntryType": "AccountRoot",
+          "LedgerIndex": "178DD5061A9E0F95BEE608FEFB3F30FB5B0BB6A0DA9A1C3D776E0E21C20A5FBD",
+          "PreviousFields": {
+            "Balance": "87456822",
+            "OwnerCount": 261,
+            "TicketCount": 17
+          },
+          "PreviousTxnID": "3DAEF65DF6F0070CFBCD5ADCB442A239D38AAEB3C4C8A942AE8D1F0F7A7412AA",
+          "PreviousTxnLgrSeq": 108127293
+        }
+      },
+      {
+        "ModifiedNode": {
+          "FinalFields": {
+            "Balance": {
+              "currency": "4555524F50000000000000000000000000000000",
+              "issuer": "rrrrrrrrrrrrrrrrrrrrBZbvji",
+              "value": "11.00273526648784"
+            },
+            "Flags": 16842752,
+            "HighLimit": {
+              "currency": "4555524F50000000000000000000000000000000",
+              "issuer": "rMkEuRii9w9uBMQDnWV5AA43gvYZR9JxVK",
+              "value": "0"
+            },
+            "HighNode": "0",
+            "LowLimit": {
+              "currency": "4555524F50000000000000000000000000000000",
+              "issuer": "rEMnngJ76rpCj4mhcRH6Etw1KHxc4nJJzw",
+              "value": "0"
+            },
+            "LowNode": "0"
+          },
+          "LedgerEntryType": "RippleState",
+          "LedgerIndex": "58549B141C961F3110B1F836A9E493B2DE6C55B88E6707CE2821B09D92E8E600",
+          "PreviousFields": {
+            "Balance": {
+              "currency": "4555524F50000000000000000000000000000000",
+              "issuer": "rrrrrrrrrrrrrrrrrrrrBZbvji",
+              "value": "10.97476101701594"
+            }
+          },
+          "PreviousTxnID": "E5601E98DD51CD6DDF6F0EF792930755A640790E1D00FBC608396956A9662121",
+          "PreviousTxnLgrSeq": 108127249
+        }
+      }
+    ],
+    "DeliveredAmount": {
+      "currency": "4249547800000000000000000000000000000000",
+      "issuer": "rBitcoiNXev8VoVxV7pwoQx1sSfonVP9i3",
+      "value": "0.0004986482708177"
+    },
+    "ParentBatchID": "3DAEF65DF6F0070CFBCD5ADCB442A239D38AAEB3C4C8A942AE8D1F0F7A7412AA",
+    "TransactionIndex": 4,
+    "TransactionResult": "tesSUCCESS",
+    "delivered_amount": {
+      "currency": "4249547800000000000000000000000000000000",
+      "issuer": "rBitcoiNXev8VoVxV7pwoQx1sSfonVP9i3",
+      "value": "0.0004986482708177"
+    }
+  },
+  "ctid": "C671E43D00040000",
+  "type": "transaction",
+  "validated": true,
+  "status": "closed",
+  "close_time_iso": "2026-11-05T07:48:31Z",
+  "ledger_index": 108127293,
+  "ledger_hash": "058DAD3EAB6F7E5B9223F5DBB480569982725993BCF73544FB663C2290E98A24",
+  "hash": "D19F8A7576C76D6AE70C6907877DDABD002616DE078633745C7FE3CA84D58036",
+  "engine_result_code": 0,
+  "engine_result": "tesSUCCESS",
+  "engine_result_message": "The transaction was applied. Only final in a validated ledger."
+}

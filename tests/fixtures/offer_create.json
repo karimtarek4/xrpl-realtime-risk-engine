@@ -1,0 +1,67 @@
+{
+  "tx_json": {
+    "Account": "rHW8GSv6qxsdu1cBqnzErLefVfbvSSSB5J",
+    "Expiration": 847180128,
+    "Fee": "15",
+    "Flags": 0,
+    "LastLedgerSequence": 108127295,
+    "OfferSequence": 108124055,
+    "Sequence": 108124057,
+    "SigningPubKey": "ED9C00F1E409C4945F3F9ECAF6ADEF2E6CF085A3AA47009EC29BE96E5311D8A916",
+    "TakerGets": "7611502",
+    "TakerPays": {
+      "currency": "524C555344000000000000000000000000000000",
+      "issuer": "rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De",
+      "value": "9.997997114076"
+    },
+    "TransactionType": "OfferCreate",
+    "TxnSignature": "D03FF71B761130AF4828929658594F74732997BC9F538C0AB1E7F05796CA5058226DB5CA34E7AAF85DBED276999FAF8E44B41F6577D137B38F6E02DB5562F90F",
+    "date": 847180111,
+    "owner_funds": "22540063"
+  },
+  "meta": {
+    "AffectedNodes": [
+      {
+        "ModifiedNode": {
+          "FinalFields": {
+            "ExchangeRate": "4f04aaa7e5e39400",
+            "Flags": 0,
+            "RootIndex": "54123B870896F4964184D7042DB75D78913D3E377BFC4ECA4F04AAA7E5E39400",
+            "TakerGetsCurrency": "0000000000000000000000000000000000000000",
+            "TakerGetsIssuer": "0000000000000000000000000000000000000000",
+            "TakerPaysCurrency": "524C555344000000000000000000000000000000",
+            "TakerPaysIssuer": "E5E961C6A025C9404AA7B662DD1DF975BE75D13E"
+          },
+          "LedgerEntryType": "DirectoryNode",
+          "LedgerIndex": "54123B870896F4964184D7042DB75D78913D3E377BFC4ECA4F04AAA7E5E39400"
+        }
+      },
+      {
+        "ModifiedNode": {
+          "FinalFields": {
+            "Flags": 0,
+            "Owner": "rHW8GSv6qxsdu1cBqnzErLefVfbvSSSB5J",
+            "RootIndex": "61959859D315BD23BCA2858FCF14E4D575719B241B0F19F42EE1E821429FD463"
+          },
+          "LedgerEntryType": "DirectoryNode",
+          "LedgerIndex": "61959859D315BD23BCA2858FCF14E4D575719B241B0F19F42EE1E821429FD463",
+          "PreviousTxnID": "387352C14CCB29321493B74FC7B7AC462B38A5EA44251C1DCF70E733E9B08785",
+          "PreviousTxnLgrSeq": 108127292
+        }
+      }
+    ],
+    "TransactionIndex": 1,
+    "TransactionResult": "tesSUCCESS"
+  },
+  "ctid": "C671E43D00010000",
+  "type": "transaction",
+  "validated": true,
+  "status": "closed",
+  "close_time_iso": "2026-11-05T07:48:31Z",
+  "ledger_index": 108127293,
+  "ledger_hash": "058DAD3EAB6F7E5B9223F5DBB480569982725993BCF73544FB663C2290E98A24",
+  "hash": "961C20EED77A346FD326B0E5FCD5BCBFE6862A15AF57DC71F8BEA614F6B61040",
+  "engine_result_code": 0,
+  "engine_result": "tesSUCCESS",
+  "engine_result_message": "The transaction was applied. Only final in a validated ledger."
+}

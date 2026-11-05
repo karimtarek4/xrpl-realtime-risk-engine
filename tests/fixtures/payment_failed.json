@@ -1,0 +1,56 @@
+{
+  "tx_json": {
+    "Account": "rPDSsmzqjSVbhRckZ5dK4HgpioikMqPh62",
+    "DeliverMax": "1000091000000",
+    "Destination": "rPDSsmzqjSVbhRckZ5dK4HgpioikMqPh62",
+    "Fee": "15",
+    "Flags": 131072,
+    "SendMax": {
+      "currency": "24425542424C4553000000000000000000000000",
+      "issuer": "rGUKfQ2Sm35KFSZ6BuKsjHxgyKSYgV7pzs",
+      "value": "1000000000000000"
+    },
+    "Sequence": 108094041,
+    "SigningPubKey": "EDDBD4A9B3D6EF3AB19CB6A21F737234D17FE3659A662535D80ED32701F4E9B5FF",
+    "TransactionType": "Payment",
+    "TxnSignature": "91308D1BE25E3EA8D6B8AF8EAF91E69F30F2EAA372DD66E0793DF5E6110EA40AA2A0DBAB2624471381E09EEAED420E9418D635E25C0EFBDFA751D50159D3E50D",
+    "date": 847180680
+  },
+  "meta": {
+    "AffectedNodes": [
+      {
+        "ModifiedNode": {
+          "FinalFields": {
+            "Account": "rPDSsmzqjSVbhRckZ5dK4HgpioikMqPh62",
+            "Balance": "7987467",
+            "Flags": 0,
+            "OwnerCount": 28,
+            "Sequence": 108094042,
+            "TicketCount": 28
+          },
+          "LedgerEntryType": "AccountRoot",
+          "LedgerIndex": "BAB2B0AAE7727A883A31945EA3BE937C36E59F4BD5D57398CB779D5CD014E49E",
+          "PreviousFields": {
+            "Balance": "7987482",
+            "Sequence": 108094041
+          },
+          "PreviousTxnID": "0DAD8C5E27E393D221D57BC85FB96BC26FF814B363E77A71259E9BA7F032FE5A",
+          "PreviousTxnLgrSeq": 108127430
+        }
+      }
+    ],
+    "TransactionIndex": 436,
+    "TransactionResult": "tecPATH_DRY"
+  },
+  "ctid": "C671E4CA01B40000",
+  "type": "transaction",
+  "validated": true,
+  "status": "closed",
+  "close_time_iso": "2026-11-05T07:58:00Z",
+  "ledger_index": 108127434,
+  "ledger_hash": "A546A89C198DA02C0011B9A24AAD8F25599425E0F8685E750A8483224A38D21F",
+  "hash": "11C623D69FFCBB8AF4B4DC335B0DA8E1CE1FD81CE56CE7BF6D2C95C6828AF872",
+  "engine_result_code": 128,
+  "engine_result": "tecPATH_DRY",
+  "engine_result_message": "Path could not send partial amount."
+}

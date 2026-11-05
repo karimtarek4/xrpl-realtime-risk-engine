@@ -1,0 +1,113 @@
+{
+  "tx_json": {
+    "Account": "r123QZphcAocEj6k9E3biWxcQACNKVHLz",
+    "DeliverMax": {
+      "currency": "4245415200000000000000000000000000000000",
+      "issuer": "rBEARGUAsyu7tUw53rufQzFdWmJHpJEqFW",
+      "value": "0.043051776753457"
+    },
+    "DeliverMin": {
+      "currency": "4245415200000000000000000000000000000000",
+      "issuer": "rBEARGUAsyu7tUw53rufQzFdWmJHpJEqFW",
+      "value": "0.040899187915784"
+    },
+    "Destination": "r123QZphcAocEj6k9E3biWxcQACNKVHLz",
+    "Fee": "10",
+    "Flags": 131072,
+    "LastLedgerSequence": 108127314,
+    "SendMax": "100",
+    "Sequence": 101741218,
+    "SigningPubKey": "ED72695A7ADFF2F0F93C6D03A78C1C5ED5934560C92A2010607B78A0E114AC3CC4",
+    "TransactionType": "Payment",
+    "TxnSignature": "143FAEBAADD7402DE4970B9B0B624CE5A780DEB169B0ACE329A4833C20302E261F00C935BF3CE714FE74E275E7749D8B1776129CCBBB7BFF65D77ED92E2FD002",
+    "date": 847180121
+  },
+  "meta": {
+    "AffectedNodes": [
+      {
+        "ModifiedNode": {
+          "FinalFields": {
+            "Balance": {
+              "currency": "4245415200000000000000000000000000000000",
+              "issuer": "rrrrrrrrrrrrrrrrrrrrBZbvji",
+              "value": "17009.21723321679"
+            },
+            "Flags": 1114112,
+            "HighLimit": {
+              "currency": "4245415200000000000000000000000000000000",
+              "issuer": "rBEARGUAsyu7tUw53rufQzFdWmJHpJEqFW",
+              "value": "0"
+            },
+            "HighNode": "54d",
+            "LowLimit": {
+              "currency": "4245415200000000000000000000000000000000",
+              "issuer": "r123QZphcAocEj6k9E3biWxcQACNKVHLz",
+              "value": "528785013"
+            },
+            "LowNode": "0"
+          },
+          "LedgerEntryType": "RippleState",
+          "LedgerIndex": "1516F3DBC5E5605DA8D9D2E0AAAA40E44ECB3FC91E44A77F788B39C92C374A74",
+          "PreviousFields": {
+            "Balance": {
+              "currency": "4245415200000000000000000000000000000000",
+              "issuer": "rrrrrrrrrrrrrrrrrrrrBZbvji",
+              "value": "17009.17418144004"
+            }
+          },
+          "PreviousTxnID": "D3F5CBB18A1BECE0097795B204AA89A4CFB006C68466728FAA7ED3F2668DAC89",
+          "PreviousTxnLgrSeq": 108127282
+        }
+      },
+      {
+        "ModifiedNode": {
+          "FinalFields": {
+            "Account": "rPRzzNueJWLfG6rEDxfnycmemozgGdL9Bw",
+            "BookDirectory": "35C6BC3FB6AE8E4F89EF4369979DAD67FACA73E6EB57D93758083FB6CF7CDB04",
+            "BookNode": "0",
+            "Expiration": 847180158,
+            "Flags": 0,
+            "OwnerNode": "0",
+            "Sequence": 105318594,
+            "TakerGets": {
+              "currency": "4245415200000000000000000000000000000000",
+              "issuer": "rBEARGUAsyu7tUw53rufQzFdWmJHpJEqFW",
+              "value": "4179.443168085906"
+            },
+            "TakerPays": "9704057"
+          },
+          "LedgerEntryType": "Offer",
+          "LedgerIndex": "1762DCEE69AACCDBDD937A9E51CAFF6812E6F5D9291057DB48EBB3997F033DC0",
+          "PreviousFields": {
+            "TakerGets": {
+              "currency": "4245415200000000000000000000000000000000",
+              "issuer": "rBEARGUAsyu7tUw53rufQzFdWmJHpJEqFW",
+              "value": "4179.486219862659"
+            },
+            "TakerPays": "9704157"
+          },
+          "PreviousTxnID": "82C9347299D6E359BBE919C0452B2CF013A6A41AE604A61E3AC171217E7712D5",
+          "PreviousTxnLgrSeq": 108127292
+        }
+      }
+    ],
+    "TransactionIndex": 13,
+    "TransactionResult": "tesSUCCESS",
+    "delivered_amount": {
+      "currency": "4245415200000000000000000000000000000000",
+      "issuer": "rBEARGUAsyu7tUw53rufQzFdWmJHpJEqFW",
+      "value": "0.043051776753457"
+    }
+  },
+  "ctid": "C671E440000D0000",
+  "type": "transaction",
+  "validated": true,
+  "status": "closed",
+  "close_time_iso": "2026-11-05T07:48:41Z",
+  "ledger_index": 108127296,
+  "ledger_hash": "843566FDEE72DE5655D1EE8D1BA0D22E41141DB72BCA798097214858ADC36A1F",
+  "hash": "96B7D74FD881F7C2A7CB3BF499B9177D1F4A4F3648755ED185CABE3D6F2A97DF",
+  "engine_result_code": 0,
+  "engine_result": "tesSUCCESS",
+  "engine_result_message": "The transaction was applied. Only final in a validated ledger."
+}
