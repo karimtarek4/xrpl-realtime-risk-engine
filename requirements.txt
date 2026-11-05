@@ -1,0 +1,5 @@
+# Runtime
+websockets>=14,<16        # XRPL WebSocket connection (producer)
+
+# Testing
+pytest>=8,<9              # unit tests in tests/unit/
