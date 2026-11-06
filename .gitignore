@@ -1,5 +1,5 @@
 # Experiment outputs
-experiments/**/demo_output.jsonl
+**/experiments/**/*.jsonl
 
 # Python
 __pycache__/
