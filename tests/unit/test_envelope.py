@@ -34,7 +34,7 @@ def test_fields_are_mapped_from_the_message():
 
 def test_envelope_has_exactly_the_agreed_fields():
     env = build_envelope(load("payment_xrp_success"), NOW)
-    assert set(env) == {"event_id", "event_time", "received_at", "ledger_index", "ingest_mode", "payload"}
+    assert set(env) == {"event_id", "event_time", "received_at", "ledger_index", "transaction_type", "ingest_mode", "payload"}
 
 
 @pytest.mark.parametrize("name", TRANSACTION_FIXTURES)

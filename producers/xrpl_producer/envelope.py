@@ -30,12 +30,13 @@ def build_envelope(
     """Wrap a v2 `transaction` message.
 
     Fields:
-        event_id     transaction `hash` (same event -> same id, so duplicates are detectable)
-        event_time   `close_time_iso` (when XRPL closed the ledger, second precision)
-        received_at  when we received it (our clock, millisecond precision)
-        ledger_index ledger sequence number
-        ingest_mode  "live" | "backfill" | "replay"
-        payload      the original message, untouched
+        event_id          transaction `hash` (same event -> same id, so duplicates are detectable)
+        event_time        `close_time_iso` (when XRPL closed the ledger, second precision)
+        received_at       when we received it (our clock, millisecond precision)
+        ledger_index      ledger sequence number
+        transaction_type  TransactionType from tx_json (e.g. Payment, OfferCreate, Batch)
+        ingest_mode       "live" | "backfill" | "replay"
+        payload           the original message, untouched
 
     Raises EnvelopeError if the message is not a transaction or lacks a required field.
     """
@@ -50,11 +51,14 @@ def build_envelope(
     if missing:
         raise EnvelopeError(f"missing required field(s): {', '.join(missing)}")
 
+    tx_type = message.get("tx_json", message).get("TransactionType")
+
     return {
         "event_id": message["hash"],
         "event_time": message["close_time_iso"],
         "received_at": _format_utc(received_at),
         "ledger_index": message["ledger_index"],
+        "transaction_type": tx_type,
         "ingest_mode": ingest_mode,
         "payload": message,
     }
