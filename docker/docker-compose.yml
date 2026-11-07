@@ -1,0 +1,69 @@
+services:
+  kafka:
+    image: apache/kafka:3.9.0
+    container_name: xrpl-kafka
+    networks:
+      - xrpl-net
+    ports:
+      - "9092:9092"
+    environment:
+      # KRaft mode: this node is both broker and controller (single-node dev setup)
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+
+      # Three listeners:
+      #   EXTERNAL → your Mac connects via localhost:9092
+      #   INTERNAL → other Docker containers connect via kafka:29092
+      #   CONTROLLER → KRaft coordination only
+      KAFKA_LISTENERS: EXTERNAL://:9092,INTERNAL://:29092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: EXTERNAL://localhost:9092,INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: EXTERNAL:PLAINTEXT,INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+
+      # Single-node: replication factor of 1 is fine for dev
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+
+      # Auto-create topics off: we create them explicitly with correct settings
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD", "/opt/kafka/bin/kafka-broker-api-versions.sh", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  kafka-init:
+    image: apache/kafka:3.9.0
+    container_name: xrpl-kafka-init
+    networks:
+      - xrpl-net
+    depends_on:
+      kafka:
+        condition: service_healthy
+    command: |
+      bash -c "
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic xrpl.raw --partitions 3 --replication-factor 1 --config retention.ms=604800000 &&
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic xrpl.payments --partitions 3 --replication-factor 1 --config retention.ms=259200000 &&
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic xrpl.dlq --partitions 3 --replication-factor 1 --config retention.ms=1209600000 &&
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic xrpl.decisions --partitions 3 --replication-factor 1 --config retention.ms=604800000 &&
+        echo 'All topics created.' &&
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:29092 --list
+      "
+    restart: "no"
+
+volumes:
+  kafka_data:
+    driver: local
+
+networks:
+  xrpl-net:
+    driver: bridge
