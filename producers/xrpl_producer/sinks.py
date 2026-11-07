@@ -4,7 +4,7 @@
 sends it to a configured sink (MessageSink implementation).
 
 Sinks are pluggable: FileSystemSink for testing/dev, KafkaProducerSink for
-production (added when Kafka branch merges).
+production.
 """
 import json
 import logging
