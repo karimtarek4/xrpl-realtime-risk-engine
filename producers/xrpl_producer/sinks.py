@@ -13,6 +13,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, AsyncIterator, Callable, Dict, Optional
 
+from aiokafka import AIOKafkaProducer
+
 import websockets
 
 from .envelope import build_envelope, EnvelopeError
@@ -71,15 +73,30 @@ class FileSystemSink(MessageSink):
 
 
 class KafkaProducerSink(MessageSink):
-    """Kafka producer (deferred: implemented when Kafka branch ready)."""
+    """Publish enveloped messages to xrpl.raw with idempotent delivery."""
+
+    def __init__(self, bootstrap_servers: str = "localhost:9092", topic: str = "xrpl.raw"):
+        self.bootstrap_servers = bootstrap_servers
+        self.topic = topic
+        self._producer: Optional[AIOKafkaProducer] = None
+
+    async def __aenter__(self):
+        self._producer = AIOKafkaProducer(
+            bootstrap_servers=self.bootstrap_servers,
+            enable_idempotence=True,
+            acks="all",
+            value_serializer=lambda v: json.dumps(v).encode(),
+            key_serializer=lambda k: k.encode() if k else None,
+        )
+        await self._producer.start()
+        return self
+
+    async def __aexit__(self, *args):
+        if self._producer:
+            await self._producer.stop()
 
     async def send(self, message: Dict[str, Any]) -> None:
-        """Send to xrpl.raw topic with idempotent producer settings.
-
-        TODO: Implement when kafka branch merges.
-        Expected: await producer.send("xrpl.raw", message, key=message["event_id"])
-        """
-        raise NotImplementedError("Kafka branch not merged yet. Use FileSystemSink for now.")
+        await self._producer.send(self.topic, value=message, key=message["event_id"])
 
 
 async def sink_messages(
