@@ -7,7 +7,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from producers.xrpl_producer.sinks import FileSystemSink, MessageSink, sink_messages
+from unittest.mock import patch, MagicMock
+
+from producers.xrpl_producer.sinks import FileSystemSink, KafkaProducerSink, MessageSink, sink_messages
 from producers.xrpl_producer.stream import Received, StreamClosed
 
 
@@ -195,3 +197,59 @@ async def test_sink_messages_adds_envelope_fields(monkeypatch):
         assert envelope["ledger_index"] == 1
         assert envelope["ingest_mode"] == "live"
         break
+
+
+# ---------------------------------------------------------------------------
+# KafkaProducerSink tests
+# ---------------------------------------------------------------------------
+
+def _make_mock_producer():
+    """Return an AIOKafkaProducer mock with async start/stop/send."""
+    producer = MagicMock()
+    producer.start = AsyncMock()
+    producer.stop = AsyncMock()
+    producer.send = AsyncMock()
+    return producer
+
+
+@pytest.mark.asyncio
+async def test_kafka_sink_starts_and_stops_producer():
+    """KafkaProducerSink should start producer on enter and stop on exit."""
+    mock_producer = _make_mock_producer()
+    # patch intercepts that line and says: "whenever this code tries to create an AIOKafkaProducer, give it my fake one instead."
+    with patch("producers.xrpl_producer.sinks.AIOKafkaProducer", return_value=mock_producer):
+        async with KafkaProducerSink("localhost:9092"):
+            mock_producer.start.assert_awaited_once()
+
+        mock_producer.stop.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_kafka_sink_sends_to_correct_topic():
+    """KafkaProducerSink should send to xrpl.raw with the envelope as value."""
+    mock_producer = _make_mock_producer()
+    envelope = {"event_id": "abc123", "payload": {}, "ingest_mode": "live"}
+
+    with patch("producers.xrpl_producer.sinks.AIOKafkaProducer", return_value=mock_producer):
+        async with KafkaProducerSink("localhost:9092", topic="xrpl.raw") as sink:
+            await sink.send(envelope)
+
+    _, kwargs = mock_producer.send.call_args
+    assert kwargs["value"] == envelope
+    # topic is the first positional arg
+    args, _ = mock_producer.send.call_args
+    assert args[0] == "xrpl.raw"
+
+
+@pytest.mark.asyncio
+async def test_kafka_sink_uses_event_id_as_key():
+    """KafkaProducerSink should use event_id as the partition key."""
+    mock_producer = _make_mock_producer()
+    envelope = {"event_id": "abc123", "payload": {}, "ingest_mode": "live"}
+
+    with patch("producers.xrpl_producer.sinks.AIOKafkaProducer", return_value=mock_producer):
+        async with KafkaProducerSink() as sink:
+            await sink.send(envelope)
+
+    _, kwargs = mock_producer.send.call_args
+    assert kwargs["key"] == "abc123"
