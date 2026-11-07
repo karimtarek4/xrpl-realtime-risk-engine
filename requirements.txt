@@ -1,0 +1,6 @@
+# Runtime
+websockets>=14,<16        # XRPL WebSocket connection (producer)
+aiokafka>=0.11,<1.0       # async Kafka producer
+
+# Testing
+pytest>=8,<9              # unit tests in tests/unit/
