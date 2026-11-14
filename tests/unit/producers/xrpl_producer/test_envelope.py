@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from xrpl_producer.envelope import EnvelopeError, build_envelope
+from producers.xrpl_producer.envelope import EnvelopeError, build_envelope
 
-FIXTURES = Path(__file__).resolve().parent.parent / "fixtures"
+FIXTURES = Path(__file__).resolve().parents[3] / "fixtures"
 NOW = datetime(2026, 11, 5, 7, 48, 32, 123000, tzinfo=timezone.utc)
 
 # Every saved fixture except the heartbeat. A new transaction fixture is picked up automatically.

@@ -6,7 +6,7 @@ import pytest
 from websockets.exceptions import ConnectionClosedError
 from websockets.frames import Close
 
-from xrpl_producer.stream import (
+from producers.xrpl_producer.stream import (
     MAX_MESSAGE_BYTES,
     StreamClosed,
     SubscribeError,
@@ -14,7 +14,7 @@ from xrpl_producer.stream import (
     subscribe_request,
 )
 
-FIXTURES = Path(__file__).resolve().parent.parent / "fixtures"
+FIXTURES = Path(__file__).resolve().parents[3] / "fixtures"
 
 SUBSCRIBE_OK = {"type": "response", "status": "success", "result": {"ledger_index": 1}}
 
