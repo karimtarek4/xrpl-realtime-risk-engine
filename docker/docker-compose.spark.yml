@@ -1,0 +1,36 @@
+services:
+  spark-master:
+    image: apache/spark:3.5.0
+    container_name: xrpl-spark-master
+    command: >
+      bash -c "mkdir -p /tmp/.ivy2/cache &&
+               /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master"
+    environment:
+      - SPARK_MASTER_HOST=spark-master
+    ports:
+      - "8080:8080"   # Spark master web UI
+      - "7077:7077"   # spark-submit connect here
+    volumes:
+      - ../consumers/speed_layer:/opt/spark/jobs
+      - ../data/speed_layer:/tmp/speed_layer
+    networks:
+      - xrpl-net
+
+  spark-worker:
+    image: apache/spark:3.5.0
+    container_name: xrpl-spark-worker
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]
+    environment:
+      - SPARK_WORKER_MEMORY=2g
+      - SPARK_WORKER_CORES=2
+    depends_on:
+      - spark-master
+    volumes:
+      - ../data/speed_layer:/tmp/speed_layer
+    networks:
+      - xrpl-net
+
+networks:
+  xrpl-net:
+    external: true
+    name: docker_xrpl-net
