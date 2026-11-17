@@ -1,6 +1,9 @@
 # Experiment outputs
 **/experiments/**/*.jsonl
 
+# Local Spark output (checkpoints, parsed payments, etc.)
+/data/
+
 # Python
 __pycache__/
 *.py[cod]
