@@ -2,5 +2,8 @@
 websockets>=14,<16        # XRPL WebSocket connection (producer)
 aiokafka>=0.11,<1.0       # async Kafka producer
 
+boto3>=1.34                # AWS SDK — DynamoDB reads/writes
+python-dotenv>=1.0        # load .env credentials
+
 # Testing
 pytest>=8,<9              # unit tests in tests/unit/
