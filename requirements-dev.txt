@@ -1,0 +1,8 @@
+ruff
+pytest
+pytest-asyncio
+pyspark==3.5.0
+boto3
+moto[dynamodb]
+aiokafka
+websockets

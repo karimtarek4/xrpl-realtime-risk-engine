@@ -5,19 +5,21 @@ Usage:
     python live_sink.py 100          # capture 100 messages then stop
     python live_sink.py 0            # run indefinitely (Ctrl+C to stop)
 """
+
 import asyncio
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
 
 from xrpl_producer.sinks import FileSystemSink, sink_messages
 
-
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
-async def run(output_file: str = os.path.join(HERE, "live_output.jsonl"), limit: int = 20):
+async def run(
+    output_file: str = os.path.join(HERE, "live_output.jsonl"), limit: int = 20
+):
     indefinite = limit == 0
     if indefinite:
         print("Connecting to XRPL... (running indefinitely, Ctrl+C to stop)")
@@ -31,8 +33,10 @@ async def run(output_file: str = os.path.join(HERE, "live_output.jsonl"), limit:
             count += 1
             tx_json = envelope["payload"].get("tx_json", {})
             tx_type = tx_json.get("TransactionType", "?")
-            result  = envelope["payload"].get("meta", {}).get("TransactionResult", "?")
-            print(f"[{count:>5}] {envelope['event_id'][:16]}...  type={tx_type:<15} result={result}")
+            result = envelope["payload"].get("meta", {}).get("TransactionResult", "?")
+            print(
+                f"[{count:>5}] {envelope['event_id'][:16]}...  type={tx_type:<15} result={result}"
+            )
             if not indefinite and count >= limit:
                 break
 

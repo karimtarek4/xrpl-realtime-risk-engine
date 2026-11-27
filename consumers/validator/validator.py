@@ -3,9 +3,9 @@
 Validates envelopes from xrpl.raw and normalises the payment amount.
 Pure functions — no Kafka, no I/O, easy to unit test.
 """
-from dataclasses import dataclass
-from typing import Any, Dict, Optional
 
+from dataclasses import dataclass
+from typing import Any
 
 REASON_NOT_PAYMENT = "not_payment"
 REASON_FAILED_TX = "failed_tx"
@@ -15,20 +15,20 @@ REASON_BAD_AMOUNT = "bad_amount"
 
 @dataclass
 class ValidPayment:
-    envelope: Dict[str, Any]
+    envelope: dict[str, Any]
     account: str
     destination: str
-    amount_xrp: Optional[float]   # set if XRP payment (drops converted to XRP)
-    amount_token: Optional[Dict]  # set if token payment
+    amount_xrp: float | None  # set if XRP payment (drops converted to XRP)
+    amount_token: dict | None  # set if token payment
 
 
 @dataclass
 class InvalidPayment:
-    envelope: Dict[str, Any]
+    envelope: dict[str, Any]
     reason_code: str
 
 
-def validate(envelope: Dict[str, Any]) -> ValidPayment | InvalidPayment:
+def validate(envelope: dict[str, Any]) -> ValidPayment | InvalidPayment:
     """Validate and normalise an envelope from xrpl.raw.
 
     Returns ValidPayment if the envelope passes all checks,
@@ -57,7 +57,7 @@ def validate(envelope: Dict[str, Any]) -> ValidPayment | InvalidPayment:
     return ValidPayment(envelope, account, destination, amount_xrp, amount_token)
 
 
-def _normalise_amount(payload: Dict[str, Any]):
+def _normalise_amount(payload: dict[str, Any]):
     """Extract and normalise the delivered amount.
 
     XRPL amounts are either:

@@ -7,8 +7,9 @@ The envelope does NOT judge the transaction. Failed payments, offers and batch
 legs are all wrapped and kept: `xrpl.raw` stores everything as received, and the
 validator downstream decides what is valid.
 """
-from datetime import datetime, timezone
-from typing import Any, Dict
+
+from datetime import UTC, datetime
+from typing import Any
 
 INGEST_MODES = frozenset({"live", "backfill", "replay"})
 
@@ -19,14 +20,18 @@ class EnvelopeError(ValueError):
 
 def _format_utc(moment: datetime) -> str:
     """Datetime -> ISO 8601 UTC with milliseconds, e.g. 2026-11-05T07:48:31.123Z."""
-    return moment.astimezone(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+    return (
+        moment.astimezone(UTC)
+        .isoformat(timespec="milliseconds")
+        .replace("+00:00", "Z")
+    )
 
 
 def build_envelope(
-    message: Dict[str, Any],
+    message: dict[str, Any],
     received_at: datetime,
     ingest_mode: str = "live",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Wrap a v2 `transaction` message.
 
     Fields:
@@ -45,9 +50,13 @@ def build_envelope(
     if received_at.tzinfo is None:
         raise EnvelopeError("received_at must be timezone-aware (use UTC)")
     if ingest_mode not in INGEST_MODES:
-        raise EnvelopeError(f"unknown ingest_mode {ingest_mode!r}; expected one of {sorted(INGEST_MODES)}")
+        raise EnvelopeError(
+            f"unknown ingest_mode {ingest_mode!r}; expected one of {sorted(INGEST_MODES)}"
+        )
 
-    missing = [f for f in ("hash", "close_time_iso", "ledger_index") if message.get(f) is None]
+    missing = [
+        f for f in ("hash", "close_time_iso", "ledger_index") if message.get(f) is None
+    ]
     if missing:
         raise EnvelopeError(f"missing required field(s): {', '.join(missing)}")
 

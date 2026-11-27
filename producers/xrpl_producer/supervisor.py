@@ -5,9 +5,11 @@ exponential backoff (1s, 2s, 4s, ... capped at 30s) and retries. After the first
 successful message from a new connection, backoff resets to 1s. Never raises; keeps
 retrying forever.
 """
+
 import asyncio
 import logging
-from typing import Any, AsyncIterator, Callable
+from collections.abc import AsyncIterator, Callable
+from typing import Any
 
 import websockets
 

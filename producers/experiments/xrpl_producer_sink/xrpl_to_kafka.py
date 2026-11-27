@@ -5,9 +5,10 @@ Usage:
     python kafka_sink.py 50                     # stop after 50 messages
     python kafka_sink.py 50 localhost:9092      # custom broker address
 """
+
 import asyncio
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
 
@@ -19,7 +20,9 @@ async def run(limit: int = 0, bootstrap_servers: str = "localhost:9092"):
     if indefinite:
         print(f"Connecting to XRPL → Kafka ({bootstrap_servers}) ... (Ctrl+C to stop)")
     else:
-        print(f"Connecting to XRPL → Kafka ({bootstrap_servers}) ... (stopping after {limit} messages)")
+        print(
+            f"Connecting to XRPL → Kafka ({bootstrap_servers}) ... (stopping after {limit} messages)"
+        )
     print()
 
     async with KafkaProducerSink(bootstrap_servers) as sink:
@@ -28,8 +31,10 @@ async def run(limit: int = 0, bootstrap_servers: str = "localhost:9092"):
             count += 1
             tx_json = envelope["payload"].get("tx_json", {})
             tx_type = tx_json.get("TransactionType", "?")
-            result  = envelope["payload"].get("meta", {}).get("TransactionResult", "?")
-            print(f"[{count:>5}] {envelope['event_id'][:16]}...  type={tx_type:<15} result={result}  → xrpl.raw")
+            result = envelope["payload"].get("meta", {}).get("TransactionResult", "?")
+            print(
+                f"[{count:>5}] {envelope['event_id'][:16]}...  type={tx_type:<15} result={result}  → xrpl.raw"
+            )
             if not indefinite and count >= limit:
                 break
 

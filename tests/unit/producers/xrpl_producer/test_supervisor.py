@@ -1,8 +1,7 @@
 """Tests for Layer 3: Supervisor (exponential backoff reconnect)."""
+
 import asyncio
-from datetime import datetime, timezone
-from typing import Any, List
-from unittest.mock import MagicMock, AsyncMock
+from datetime import UTC, datetime
 
 import pytest
 
@@ -13,7 +12,7 @@ from producers.xrpl_producer.supervisor import supervise_stream
 class FakeStream:
     """Mocks stream_messages. Can be configured to fail or yield messages."""
 
-    def __init__(self, messages: List[dict], fail_count: int = 0):
+    def __init__(self, messages: list[dict], fail_count: int = 0):
         """
         Args:
             messages: list of messages to yield before raising StreamClosed
@@ -35,21 +34,25 @@ class FakeStream:
         if self.failed_this_call:
             # Fail on first __anext__ call after __aiter__
             self.failed_this_call = False
-            raise StreamClosed(code=None, reason="simulated", lived_seconds=0.1, messages=0)
+            raise StreamClosed(
+                code=None, reason="simulated", lived_seconds=0.1, messages=0
+            )
         if self.index >= len(self.messages):
-            raise StreamClosed(code=None, reason="done", lived_seconds=0.1, messages=len(self.messages))
+            raise StreamClosed(
+                code=None, reason="done", lived_seconds=0.1, messages=len(self.messages)
+            )
         msg = self.messages[self.index]
         self.index += 1
         return msg
 
 
-def fake_stream(messages: List[dict], fail_count: int = 0):
+def fake_stream(messages: list[dict], fail_count: int = 0):
     """Create a FakeStream and wrap it so supervisor calls stream_messages."""
     fake = FakeStream(messages, fail_count)
 
     async def mock_stream_messages(url, connect):
         async for msg in fake:
-            yield Received(received_at=datetime.now(timezone.utc), message=msg)
+            yield Received(received_at=datetime.now(UTC), message=msg)
 
     return mock_stream_messages, fake
 
@@ -62,7 +65,9 @@ async def test_yields_messages_from_successful_stream(monkeypatch):
         {"type": "ledgerClosed", "ledger_index": 1},
     ]
     mock_stream, fake = fake_stream(messages)
-    monkeypatch.setattr("producers.xrpl_producer.supervisor.stream_messages", mock_stream)
+    monkeypatch.setattr(
+        "producers.xrpl_producer.supervisor.stream_messages", mock_stream
+    )
 
     received = []
     async for msg in supervise_stream("ws://test"):
@@ -80,7 +85,9 @@ async def test_reconnects_after_disconnect(monkeypatch):
     """Supervisor should reconnect and continue after StreamClosed."""
     messages = [{"type": "transaction", "hash": "tx1"}]
     mock_stream, fake = fake_stream(messages, fail_count=1)
-    monkeypatch.setattr("producers.xrpl_producer.supervisor.stream_messages", mock_stream)
+    monkeypatch.setattr(
+        "producers.xrpl_producer.supervisor.stream_messages", mock_stream
+    )
 
     received = []
     async for msg in supervise_stream("ws://test"):
@@ -99,13 +106,16 @@ async def test_backoff_increases_on_repeated_disconnects(monkeypatch):
     """Each disconnect should wait longer before retry."""
     messages = [{"type": "transaction", "hash": "tx1"}]
     mock_stream, fake = fake_stream(messages, fail_count=2)
-    monkeypatch.setattr("producers.xrpl_producer.supervisor.stream_messages", mock_stream)
+    monkeypatch.setattr(
+        "producers.xrpl_producer.supervisor.stream_messages", mock_stream
+    )
 
     start = asyncio.get_event_loop().time()
     waits = []
 
     # Instrument asyncio.sleep to record wait times
     original_sleep = asyncio.sleep
+
     async def recorded_sleep(delay):
         waits.append(delay)
         await original_sleep(0.01)  # Sleep briefly to avoid hammering CPU
@@ -135,7 +145,9 @@ async def test_backoff_resets_after_successful_message(monkeypatch):
         if call_count[0] == 1:
             raise StreamClosed(code=None, reason="fail", lived_seconds=0.1, messages=0)
         elif call_count[0] == 2:
-            yield Received(received_at=datetime.now(timezone.utc), message={"type": "transaction"})
+            yield Received(
+                received_at=datetime.now(UTC), message={"type": "transaction"}
+            )
             raise StreamClosed(code=None, reason="fail", lived_seconds=0.1, messages=1)
         else:
             raise StreamClosed(code=None, reason="fail", lived_seconds=0.1, messages=0)
@@ -181,7 +193,9 @@ async def test_backoff_caps_at_30_seconds(monkeypatch):
             self.call_count += 1
             # Fail 8 times, then succeed on 9th
             if self.call_count < 9:
-                raise StreamClosed(code=None, reason="fail", lived_seconds=0.1, messages=0)
+                raise StreamClosed(
+                    code=None, reason="fail", lived_seconds=0.1, messages=0
+                )
             yield {"type": "transaction", "hash": "tx1"}
 
     tracker = ManyFailures()

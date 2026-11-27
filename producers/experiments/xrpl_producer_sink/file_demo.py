@@ -1,11 +1,10 @@
 """Demo: Feed messages from a JSON file to a sink."""
+
 import asyncio
 import json
-from datetime import datetime, timezone
-from pathlib import Path
+from datetime import UTC, datetime
 
-from xrpl_producer.sinks import FileSystemSink, sink_messages
-from xrpl_producer.stream import Received
+from xrpl_producer.sinks import FileSystemSink
 
 
 async def demo_with_file(input_file: str, output_file: str = "sink_output.jsonl"):
@@ -34,7 +33,7 @@ async def demo_with_file(input_file: str, output_file: str = "sink_output.jsonl"
     async with FileSystemSink(output_file) as sink:
         for msg in messages:
             try:
-                envelope = build_envelope(msg, datetime.now(timezone.utc), "live")
+                envelope = build_envelope(msg, datetime.now(UTC), "live")
                 await sink.send(envelope)
                 event_id = envelope["event_id"]
                 ledger = envelope["ledger_index"]
@@ -47,7 +46,7 @@ async def demo_with_file(input_file: str, output_file: str = "sink_output.jsonl"
         output_lines = f.readlines()
 
     print(f"\n✅ Wrote {len(output_lines)} enveloped messages")
-    print(f"📄 First envelope:")
+    print("📄 First envelope:")
     if output_lines:
         first = json.loads(output_lines[0])
         print(f"   event_id: {first['event_id']}")
@@ -79,4 +78,6 @@ if __name__ == "__main__":
     with open("demo_output.jsonl") as f:
         for i, line in enumerate(f, 1):
             envelope = json.loads(line)
-            print(f"{i}. event_id={envelope['event_id']}, ledger={envelope['ledger_index']}, mode={envelope['ingest_mode']}")
+            print(
+                f"{i}. event_id={envelope['event_id']}, ledger={envelope['ledger_index']}, mode={envelope['ingest_mode']}"
+            )

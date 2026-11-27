@@ -28,7 +28,9 @@ class FakeConnection:
 
     def __init__(self, incoming, error=None, close_code=None, close_reason=None):
         # what api sends
-        self.incoming = [i if isinstance(i, (str, bytes)) else json.dumps(i) for i in incoming]
+        self.incoming = [
+            i if isinstance(i, (str, bytes)) else json.dumps(i) for i in incoming
+        ]
         self.error = error
         self.close_code = close_code
         self.close_reason = close_reason
@@ -63,7 +65,7 @@ def fake_connect(connection=None, fail_with=None):
         if fail_with:
             raise fail_with
         return connection
-    
+
     #  test look at connect.calls afterwards to see what was requested.
     connect.calls = []
     return connect
@@ -109,7 +111,7 @@ def test_connects_with_a_raised_message_size_limit():
 )
 def test_every_transaction_fixture_passes_through_unchanged(name):
     msg = fixture(name)
-    # We're playing the XRPL side, first subscribe ok, 
+    # We're playing the XRPL side, first subscribe ok,
     got, _ = run(fake_connect(FakeConnection([SUBSCRIBE_OK, msg])))
     assert [r.message for r in got] == [msg]
 
@@ -123,7 +125,9 @@ def test_skips_the_response_and_unknown_message_types():
 
 def test_skips_frames_that_are_not_json_and_keeps_going():
     tx = fixture("payment_xrp_success")
-    got, _ = run(fake_connect(FakeConnection([SUBSCRIBE_OK, "not json {", "[1, 2]", tx])))
+    got, _ = run(
+        fake_connect(FakeConnection([SUBSCRIBE_OK, "not json {", "[1, 2]", tx]))
+    )
     assert [r.message for r in got] == [tx]
 
 
@@ -135,7 +139,9 @@ def test_rejected_subscribe_raises():
 
 def test_drop_without_close_frame_reports_no_code_after_delivering_what_arrived():
     tx = fixture("payment_xrp_success")
-    conn = FakeConnection([SUBSCRIBE_OK, tx, tx], error=ConnectionClosedError(None, None))
+    conn = FakeConnection(
+        [SUBSCRIBE_OK, tx, tx], error=ConnectionClosedError(None, None)
+    )
     got, closed = run(fake_connect(conn))
 
     assert len(got) == 2
@@ -145,6 +151,8 @@ def test_drop_without_close_frame_reports_no_code_after_delivering_what_arrived(
 
 
 def test_close_code_and_reason_from_the_server_are_kept():
-    conn = FakeConnection([SUBSCRIBE_OK], error=ConnectionClosedError(Close(1011, "server error"), None))
+    conn = FakeConnection(
+        [SUBSCRIBE_OK], error=ConnectionClosedError(Close(1011, "server error"), None)
+    )
     _, closed = run(fake_connect(conn))
     assert (closed.code, closed.reason) == (1011, "server error")

@@ -3,11 +3,13 @@
 Reads credentials from .env (never committed to git).
 Run via: make test-dynamodb
 """
+
 import os
 import sys
-from dotenv import load_dotenv
+
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -44,8 +46,11 @@ def test_table(dynamodb, tables):
     table = dynamodb.create_table(
         TableName=TABLE_NAME,
         KeySchema=[
-            {"AttributeName": "account_id", "KeyType": "HASH"},   # partition key
-            {"AttributeName": "feature_set", "KeyType": "RANGE"},  # sort key: "rt" | "batch"
+            {"AttributeName": "account_id", "KeyType": "HASH"},  # partition key
+            {
+                "AttributeName": "feature_set",
+                "KeyType": "RANGE",
+            },  # sort key: "rt" | "batch"
         ],
         AttributeDefinitions=[
             {"AttributeName": "account_id", "AttributeType": "S"},
@@ -65,7 +70,7 @@ def test_table(dynamodb, tables):
 
 
 def main():
-    print(f"\nTesting DynamoDB connection...")
+    print("\nTesting DynamoDB connection...")
     try:
         dynamodb = get_client()
         tables = test_connection(dynamodb)

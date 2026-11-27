@@ -1,5 +1,5 @@
 """Tests for consumers/validator/consumer.py"""
-import json
+
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -7,10 +7,10 @@ import pytest
 from consumers.validator.consumer import _build_dlq, _build_payment, run
 from consumers.validator.validator import InvalidPayment, ValidPayment
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _envelope(event_id: str = "tx1") -> dict:
     return {
@@ -24,7 +24,9 @@ def _envelope(event_id: str = "tx1") -> dict:
     }
 
 
-def _valid(event_id: str = "tx1", account: str = "rA", destination: str = "rB") -> ValidPayment:
+def _valid(
+    event_id: str = "tx1", account: str = "rA", destination: str = "rB"
+) -> ValidPayment:
     return ValidPayment(
         envelope=_envelope(event_id),
         account=account,
@@ -41,6 +43,7 @@ def _invalid(event_id: str = "tx1", reason: str = "not_payment") -> InvalidPayme
 # ---------------------------------------------------------------------------
 # _build_payment
 # ---------------------------------------------------------------------------
+
 
 def test_build_payment_flattens_fields():
     result = _build_payment(_valid())
@@ -63,6 +66,7 @@ def test_build_payment_preserves_envelope_fields():
 # _build_dlq
 # ---------------------------------------------------------------------------
 
+
 def test_build_dlq_has_required_fields():
     result = _build_dlq(_invalid(reason="not_payment"))
 
@@ -83,6 +87,7 @@ def test_build_dlq_preserves_original_envelope():
 # ---------------------------------------------------------------------------
 # run() — routing
 # ---------------------------------------------------------------------------
+
 
 def _make_kafka_mocks():
     consumer = MagicMock()
@@ -112,14 +117,21 @@ async def _aiter(items):
 async def test_run_routes_valid_payment_to_payments_topic():
     envelope = _envelope("tx1")
     envelope["payload"] = {
-        "tx_json": {"TransactionType": "Payment", "Account": "rA", "Destination": "rB", "Amount": "1000000"},
+        "tx_json": {
+            "TransactionType": "Payment",
+            "Account": "rA",
+            "Destination": "rB",
+            "Amount": "1000000",
+        },
         "meta": {"TransactionResult": "tesSUCCESS", "delivered_amount": "1000000"},
     }
     consumer, producer = _make_kafka_mocks()
     consumer.__aiter__ = lambda self: _aiter([_kafka_message(envelope)])
 
-    with patch("consumers.validator.consumer.AIOKafkaConsumer", return_value=consumer), \
-         patch("consumers.validator.consumer.AIOKafkaProducer", return_value=producer):
+    with (
+        patch("consumers.validator.consumer.AIOKafkaConsumer", return_value=consumer),
+        patch("consumers.validator.consumer.AIOKafkaProducer", return_value=producer),
+    ):
         await run()
 
     producer.send.assert_awaited_once()
@@ -138,8 +150,10 @@ async def test_run_routes_invalid_payment_to_dlq():
     consumer, producer = _make_kafka_mocks()
     consumer.__aiter__ = lambda self: _aiter([_kafka_message(envelope)])
 
-    with patch("consumers.validator.consumer.AIOKafkaConsumer", return_value=consumer), \
-         patch("consumers.validator.consumer.AIOKafkaProducer", return_value=producer):
+    with (
+        patch("consumers.validator.consumer.AIOKafkaConsumer", return_value=consumer),
+        patch("consumers.validator.consumer.AIOKafkaProducer", return_value=producer),
+    ):
         await run()
 
     producer.send.assert_awaited_once()
@@ -153,18 +167,27 @@ async def test_run_routes_invalid_payment_to_dlq():
 async def test_run_deduplicates_same_event_id():
     envelope = _envelope("tx1")
     envelope["payload"] = {
-        "tx_json": {"TransactionType": "Payment", "Account": "rA", "Destination": "rB", "Amount": "1000000"},
+        "tx_json": {
+            "TransactionType": "Payment",
+            "Account": "rA",
+            "Destination": "rB",
+            "Amount": "1000000",
+        },
         "meta": {"TransactionResult": "tesSUCCESS", "delivered_amount": "1000000"},
     }
     consumer, producer = _make_kafka_mocks()
     # same envelope twice
-    consumer.__aiter__ = lambda self: _aiter([
-        _kafka_message(envelope),
-        _kafka_message(envelope),
-    ])
+    consumer.__aiter__ = lambda self: _aiter(
+        [
+            _kafka_message(envelope),
+            _kafka_message(envelope),
+        ]
+    )
 
-    with patch("consumers.validator.consumer.AIOKafkaConsumer", return_value=consumer), \
-         patch("consumers.validator.consumer.AIOKafkaProducer", return_value=producer):
+    with (
+        patch("consumers.validator.consumer.AIOKafkaConsumer", return_value=consumer),
+        patch("consumers.validator.consumer.AIOKafkaProducer", return_value=producer),
+    ):
         await run()
 
     # only one send despite two messages
@@ -177,8 +200,10 @@ async def test_run_skips_envelope_with_no_event_id():
     consumer, producer = _make_kafka_mocks()
     consumer.__aiter__ = lambda self: _aiter([_kafka_message(envelope)])
 
-    with patch("consumers.validator.consumer.AIOKafkaConsumer", return_value=consumer), \
-         patch("consumers.validator.consumer.AIOKafkaProducer", return_value=producer):
+    with (
+        patch("consumers.validator.consumer.AIOKafkaConsumer", return_value=consumer),
+        patch("consumers.validator.consumer.AIOKafkaProducer", return_value=producer),
+    ):
         await run()
 
     producer.send.assert_not_awaited()
@@ -189,8 +214,10 @@ async def test_run_stops_consumer_and_producer_on_exit():
     consumer, producer = _make_kafka_mocks()
     consumer.__aiter__ = lambda self: _aiter([])
 
-    with patch("consumers.validator.consumer.AIOKafkaConsumer", return_value=consumer), \
-         patch("consumers.validator.consumer.AIOKafkaProducer", return_value=producer):
+    with (
+        patch("consumers.validator.consumer.AIOKafkaConsumer", return_value=consumer),
+        patch("consumers.validator.consumer.AIOKafkaProducer", return_value=producer),
+    ):
         await run()
 
     consumer.stop.assert_awaited_once()

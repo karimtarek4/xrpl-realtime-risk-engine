@@ -1,6 +1,6 @@
 import copy
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -8,7 +8,7 @@ import pytest
 from producers.xrpl_producer.envelope import EnvelopeError, build_envelope
 
 FIXTURES = Path(__file__).resolve().parents[3] / "fixtures"
-NOW = datetime(2026, 11, 5, 7, 48, 32, 123000, tzinfo=timezone.utc)
+NOW = datetime(2026, 11, 5, 7, 48, 32, 123000, tzinfo=UTC)
 
 # Every saved fixture except the heartbeat. A new transaction fixture is picked up automatically.
 TRANSACTION_FIXTURES = sorted(
@@ -34,7 +34,15 @@ def test_fields_are_mapped_from_the_message():
 
 def test_envelope_has_exactly_the_agreed_fields():
     env = build_envelope(load("payment_xrp_success"), NOW)
-    assert set(env) == {"event_id", "event_time", "received_at", "ledger_index", "transaction_type", "ingest_mode", "payload"}
+    assert set(env) == {
+        "event_id",
+        "event_time",
+        "received_at",
+        "ledger_index",
+        "transaction_type",
+        "ingest_mode",
+        "payload",
+    }
 
 
 @pytest.mark.parametrize("name", TRANSACTION_FIXTURES)
@@ -68,12 +76,16 @@ def test_input_message_is_not_modified():
 
 def test_received_at_is_converted_to_utc():
     cairo = timezone(timedelta(hours=2))
-    env = build_envelope(load("payment_xrp_success"), datetime(2026, 11, 5, 9, 48, 32, tzinfo=cairo))
+    env = build_envelope(
+        load("payment_xrp_success"), datetime(2026, 11, 5, 9, 48, 32, tzinfo=cairo)
+    )
     assert env["received_at"] == "2026-11-05T07:48:32.000Z"
+
 
 def test_unknown_ingest_mode_is_rejected():
     with pytest.raises(EnvelopeError, match="ingest_mode"):
         build_envelope(load("payment_xrp_success"), NOW, ingest_mode="banana")
+
 
 def test_naive_received_at_is_rejected():
     with pytest.raises(EnvelopeError, match="timezone-aware"):

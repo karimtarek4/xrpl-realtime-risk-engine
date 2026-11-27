@@ -6,19 +6,17 @@ sends it to a configured sink (MessageSink implementation).
 Sinks are pluggable: FileSystemSink for testing/dev, KafkaProducerSink for
 production.
 """
+
 import json
 import logging
 from abc import ABC, abstractmethod
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any, AsyncIterator, Callable, Dict, Optional
-
-from aiokafka import AIOKafkaProducer
+from collections.abc import AsyncIterator, Callable
+from typing import Any
 
 import websockets
+from aiokafka import AIOKafkaProducer
 
-from .envelope import build_envelope, EnvelopeError
-from .stream import Received, StreamClosed
+from .envelope import EnvelopeError, build_envelope
 from .supervisor import supervise_stream
 
 log = logging.getLogger(__name__)
@@ -28,7 +26,7 @@ class MessageSink(ABC):
     """Abstract base for message sinks."""
 
     @abstractmethod
-    async def send(self, message: Dict[str, Any]) -> None:
+    async def send(self, message: dict[str, Any]) -> None:
         """Send an enveloped message to storage.
 
         Args:
@@ -42,7 +40,7 @@ class MessageSink(ABC):
 class FileSystemSink(MessageSink):
     """Write enveloped messages as JSON lines to a file."""
 
-    def __init__(self, file_path: Optional[str] = None):
+    def __init__(self, file_path: str | None = None):
         """
         Args:
             file_path: path to write JSON lines to. If None, write to stdout.
@@ -62,7 +60,7 @@ class FileSystemSink(MessageSink):
         if self.file:
             self.file.close()
 
-    async def send(self, message: Dict[str, Any]) -> None:
+    async def send(self, message: dict[str, Any]) -> None:
         """Write message as JSON line."""
         line = json.dumps(message)
         if self.file:
@@ -75,10 +73,12 @@ class FileSystemSink(MessageSink):
 class KafkaProducerSink(MessageSink):
     """Publish enveloped messages to xrpl.raw with idempotent delivery."""
 
-    def __init__(self, bootstrap_servers: str = "localhost:9092", topic: str = "xrpl.raw"):
+    def __init__(
+        self, bootstrap_servers: str = "localhost:9092", topic: str = "xrpl.raw"
+    ):
         self.bootstrap_servers = bootstrap_servers
         self.topic = topic
-        self._producer: Optional[AIOKafkaProducer] = None
+        self._producer: AIOKafkaProducer | None = None
 
     async def __aenter__(self):
         self._producer = AIOKafkaProducer(
@@ -95,7 +95,7 @@ class KafkaProducerSink(MessageSink):
         if self._producer:
             await self._producer.stop()
 
-    async def send(self, message: Dict[str, Any]) -> None:
+    async def send(self, message: dict[str, Any]) -> None:
         await self._producer.send(self.topic, value=message, key=message["event_id"])
 
 
@@ -104,7 +104,7 @@ async def sink_messages(
     url: str = "wss://s1.ripple.com",
     connect: Callable[..., Any] = websockets.connect,
     ingest_mode: str = "live",
-) -> AsyncIterator[Dict[str, Any]]:
+) -> AsyncIterator[dict[str, Any]]:
     """Receive messages from XRPL, envelope them, send to sink.
 
     Wraps Layer 3 (Supervisor). Takes raw messages, builds envelopes, sends
@@ -124,7 +124,9 @@ async def sink_messages(
     """
     async for received in supervise_stream(url, connect):
         try:
-            envelope = build_envelope(received.message, received.received_at, ingest_mode)
+            envelope = build_envelope(
+                received.message, received.received_at, ingest_mode
+            )
             await sink.send(envelope)
             yield envelope
         except EnvelopeError as e:

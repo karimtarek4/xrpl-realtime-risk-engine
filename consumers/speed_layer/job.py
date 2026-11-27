@@ -21,14 +21,16 @@ Submit:
 Production swap: replace KAFKA_BOOTSTRAP with MSK endpoint, OUTPUT_PATH /
 CHECKPOINT_PATH with s3:// paths, startingOffsets with "latest". No logic changes.
 """
+
 import os
 import time
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
 
 import boto3
 from dotenv import load_dotenv
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, count, get_json_object, sum as spark_sum, window
+from pyspark.sql.functions import col, count, get_json_object, window
+from pyspark.sql.functions import sum as spark_sum
 from pyspark.sql.types import DoubleType, TimestampType
 
 load_dotenv()
@@ -48,8 +50,7 @@ MAX_BATCHES = 20
 
 def build_spark() -> SparkSession:
     return (
-        SparkSession.builder
-        .appName("xrpl-speed-layer")
+        SparkSession.builder.appName("xrpl-speed-layer")
         .master(SPARK_MASTER)
         .getOrCreate()
     )
@@ -82,7 +83,9 @@ def write_to_dynamo(batch_df, batch_id):
     the current time and deletes the item automatically after TTL_HOURS.
     """
     table = get_dynamo_table()
-    expires_at = int((datetime.now(timezone.utc) + timedelta(hours=TTL_HOURS)).timestamp())
+    expires_at = int(
+        (datetime.now(UTC) + timedelta(hours=TTL_HOURS)).timestamp()
+    )
 
     # batch_df is a regular (non-streaming) DataFrame inside foreachBatch.
     # collect() pulls all rows to the driver — fine for feature rows which are
@@ -126,18 +129,14 @@ def parse_payments(raw):
     - amount_xrp is null for token (non-XRP) payments; kept so they still
       contribute to payment_count, just not to total_amount_xrp.
     """
-    return (
-        raw
-        .selectExpr("CAST(value AS STRING) AS json")
-        .select(
-            get_json_object(col("json"), "$.account").alias("account"),
-            get_json_object(col("json"), "$.event_time")
-                .cast(TimestampType())
-                .alias("event_time"),
-            get_json_object(col("json"), "$.amount_xrp")
-                .cast(DoubleType())
-                .alias("amount_xrp"),
-        )
+    return raw.selectExpr("CAST(value AS STRING) AS json").select(
+        get_json_object(col("json"), "$.account").alias("account"),
+        get_json_object(col("json"), "$.event_time")
+        .cast(TimestampType())
+        .alias("event_time"),
+        get_json_object(col("json"), "$.amount_xrp")
+        .cast(DoubleType())
+        .alias("amount_xrp"),
     )
 
 
@@ -152,8 +151,7 @@ def compute_velocity_features(payments):
     Output row: { window: {start, end}, account, payment_count, total_amount_xrp }
     """
     return (
-        payments
-        .withWatermark("event_time", WATERMARK_DELAY)
+        payments.withWatermark("event_time", WATERMARK_DELAY)
         .groupBy(
             window(col("event_time"), WINDOW_DURATION),
             col("account"),
@@ -170,8 +168,7 @@ def run():
     spark.sparkContext.setLogLevel("WARN")
 
     raw = (
-        spark.readStream
-        .format("kafka")
+        spark.readStream.format("kafka")
         .option("kafka.bootstrap.servers", KAFKA_BOOTSTRAP)
         .option("subscribe", TOPIC)
         # "earliest" replays all available messages on startup — swap to
@@ -186,8 +183,7 @@ def run():
     features = compute_velocity_features(payments)
 
     dynamo_query = (
-        features.writeStream
-        .foreachBatch(write_to_dynamo)
+        features.writeStream.foreachBatch(write_to_dynamo)
         .option("checkpointLocation", CHECKPOINT_PATH_DYNAMO)
         .outputMode("append")
         .start()

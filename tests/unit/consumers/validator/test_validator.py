@@ -1,4 +1,5 @@
 """Tests for consumers/validator/validator.py"""
+
 import json
 from pathlib import Path
 
@@ -36,6 +37,7 @@ def _envelope(payload: dict) -> dict:
 # ---------------------------------------------------------------------------
 # Valid payments
 # ---------------------------------------------------------------------------
+
 
 def test_valid_xrp_payment():
     envelope = _envelope(_load("payment_xrp_success.json"))
@@ -79,6 +81,7 @@ def test_valid_payment_envelope_preserved():
 # Invalid: not a Payment
 # ---------------------------------------------------------------------------
 
+
 def test_rejects_offer_create():
     envelope = _envelope(_load("offer_create.json"))
     result = validate(envelope)
@@ -99,6 +102,7 @@ def test_rejects_ledger_closed():
 # Invalid: failed transaction
 # ---------------------------------------------------------------------------
 
+
 def test_rejects_failed_payment():
     envelope = _envelope(_load("payment_failed.json"))
     result = validate(envelope)
@@ -110,6 +114,7 @@ def test_rejects_failed_payment():
 # ---------------------------------------------------------------------------
 # Invalid: missing fields
 # ---------------------------------------------------------------------------
+
 
 def test_rejects_missing_account():
     payload = _load("payment_xrp_success.json")
@@ -132,6 +137,7 @@ def test_rejects_missing_destination():
 # ---------------------------------------------------------------------------
 # Invalid: bad amount
 # ---------------------------------------------------------------------------
+
 
 def test_rejects_missing_amount():
     payload = _load("payment_xrp_success.json")
@@ -167,6 +173,7 @@ def test_rejects_incomplete_token_amount():
 # ---------------------------------------------------------------------------
 # Amount normalisation
 # ---------------------------------------------------------------------------
+
 
 def test_uses_delivered_amount_over_tx_amount():
     """delivered_amount takes precedence over tx_json Amount."""

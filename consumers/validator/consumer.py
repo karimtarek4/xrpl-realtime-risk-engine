@@ -1,12 +1,13 @@
 """Validator consumer: reads xrpl.raw, validates, routes to xrpl.payments or xrpl.dlq."""
+
 import asyncio
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 
-from .validator import validate, ValidPayment, InvalidPayment
+from .validator import InvalidPayment, ValidPayment, validate
 
 log = logging.getLogger(__name__)
 
@@ -16,7 +17,7 @@ TOPIC_DLQ = "xrpl.dlq"
 
 
 def _now_utc() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
 
 def _build_payment(valid: ValidPayment) -> dict:
@@ -84,9 +85,13 @@ async def run(bootstrap_servers: str = "localhost:9092", group_id: str = "valida
             else:
                 dlq_msg = _build_dlq(result)
                 headers = [("reason_code", result.reason_code.encode())]
-                await producer.send(TOPIC_DLQ, value=dlq_msg, key=event_id, headers=headers)
+                await producer.send(
+                    TOPIC_DLQ, value=dlq_msg, key=event_id, headers=headers
+                )
                 seen.add(event_id)
-                log.debug("Routed %s → %s (%s)", event_id, TOPIC_DLQ, result.reason_code)
+                log.debug(
+                    "Routed %s → %s (%s)", event_id, TOPIC_DLQ, result.reason_code
+                )
 
     finally:
         await consumer.stop()
@@ -95,5 +100,7 @@ async def run(bootstrap_servers: str = "localhost:9092", group_id: str = "valida
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s"
+    )
     asyncio.run(run())
