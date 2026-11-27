@@ -89,6 +89,16 @@ def write_to_dynamo(batch_df, batch_id):
     # small aggregates, not raw events.
     rows = batch_df.collect()
 
+    # Multiple windows for the same account can finalize in the same micro-batch.
+    # Keep only the latest window_end per account so an older window never
+    # overwrites a newer one that was written first in the same batch.
+    latest: dict = {}
+    for row in rows:
+        acct = row["account"]
+        if acct not in latest or row["window"]["end"] > latest[acct]["window"]["end"]:
+            latest[acct] = row
+    rows = list(latest.values())
+
     with table.batch_writer() as batch:
         for row in rows:
             item = {
