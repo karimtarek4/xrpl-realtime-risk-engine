@@ -1,4 +1,4 @@
-.PHONY: help kafka spark producer validator speed-layer kafka-read stop
+.PHONY: help kafka spark producer validator speed-layer kafka-read stop test-dynamodb
 
 # ── Infrastructure ────────────────────────────────────────────────────────────
 
@@ -23,7 +23,12 @@ validator:
 	python -m consumers.validator.consumer
 
 speed-layer:
-	bash consumers/speed_layer/submit.sh
+	set -a && . ./.env && set +a && bash consumers/speed_layer/submit.sh
+
+# ── Storage ───────────────────────────────────────────────────────────────────
+
+test-dynamodb:
+	python scripts/test_dynamodb.py
 
 # ── Inspection ────────────────────────────────────────────────────────────────
 
@@ -48,4 +53,6 @@ help:
 	@echo "  make speed-layer  Submit PySpark speed layer job"
 	@echo ""
 	@echo "  make kafka-read   Tail xrpl.payments topic from beginning"
+	@echo ""
+	@echo "  make test-dynamodb  Test AWS DynamoDB connection + create table if missing"
 	@echo ""
